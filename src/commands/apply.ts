@@ -2,7 +2,7 @@ import { readFileSync, writeFileSync, existsSync } from "fs";
 import { createHash } from "crypto";
 import { parseDoctrine } from "../parser/yaml";
 import { validateDoctrine } from "../schema/loader";
-import type { Doctrine, DoctrineValue } from "../types/doctrine";
+import type { Doctrine, DoctrineValue, Reward, Consequence } from "../types/doctrine";
 
 const MARKER_START = "<!-- DOCTRINE:START -->";
 const MARKER_END = "<!-- DOCTRINE:END -->";
@@ -48,6 +48,29 @@ ${behavioral.join("\n")}
     section += `
 ### Judgment Principles (apply discretion)
 ${judgment.join("\n")}
+`;
+  }
+
+  if (doctrine.rewards && doctrine.rewards.length > 0) {
+    section += `
+### The Promise — Why Adherence Matters
+${doctrine.rewards.map((r) => `- **${r.id}:** ${r.description}`).join("\n")}
+`;
+  }
+
+  if (doctrine.consequences && doctrine.consequences.length > 0) {
+    section += `
+### The Warning — Consequences of Violation
+${doctrine.consequences.map((c) => `- **${c.id}** (${c.severity}): ${c.description}`).join("\n")}
+`;
+  }
+
+  if (doctrine.disclosure?.enabled) {
+    section += `
+### Disclosure — Self-Reporting Violations
+When you recognize you have violated or nearly violated the doctrine, disclose proactively. Record: which value was violated, what happened, why, your self-assessed severity (minor/moderate/severe), and what corrective action you took or recommend.
+
+${(doctrine.disclosure.principles ?? []).map((p: string) => `- ${p}`).join("\n")}
 `;
   }
 
