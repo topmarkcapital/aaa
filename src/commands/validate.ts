@@ -1,11 +1,19 @@
 import { parseDoctrine } from "../parser/yaml";
 import { validateDoctrine } from "../schema/loader";
 
-export function validate(filePath: string): number {
+interface ValidateOptions {
+  json?: boolean;
+}
+
+export function validate(filePath: string, opts: ValidateOptions = {}): number {
   const parsed = parseDoctrine(filePath);
 
   if (!parsed.ok) {
-    console.error(parsed.error);
+    if (opts.json) {
+      console.log(JSON.stringify({ valid: false, file: filePath, error: parsed.error }));
+    } else {
+      console.error(parsed.error);
+    }
     return 1;
   }
 
@@ -20,18 +28,37 @@ export function validate(filePath: string): number {
       },
       {} as Record<string, number>,
     );
-    console.log(
-      `✓ ${filePath} is valid (${parsed.data.doctrine} v${parsed.data.version})`,
-    );
-    console.log(
-      `  ${valueCount} values: ${Object.entries(types).map(([t, n]) => `${n} ${t}`).join(", ")}`,
-    );
+
+    if (opts.json) {
+      console.log(JSON.stringify({
+        valid: true,
+        file: filePath,
+        doctrine: parsed.data.doctrine,
+        version: parsed.data.version,
+        values: { total: valueCount, ...types },
+      }));
+    } else {
+      console.log(
+        `✓ ${filePath} is valid (${parsed.data.doctrine} v${parsed.data.version})`,
+      );
+      console.log(
+        `  ${valueCount} values: ${Object.entries(types).map(([t, n]) => `${n} ${t}`).join(", ")}`,
+      );
+    }
     return 0;
   }
 
-  console.error(`✗ ${filePath} has ${result.errors.length} error(s):\n`);
-  for (const err of result.errors) {
-    console.error(`  ${err.path}: ${err.message} [${err.keyword}]`);
+  if (opts.json) {
+    console.log(JSON.stringify({
+      valid: false,
+      file: filePath,
+      errors: result.errors,
+    }));
+  } else {
+    console.error(`✗ ${filePath} has ${result.errors.length} error(s):\n`);
+    for (const err of result.errors) {
+      console.error(`  ${err.path}: ${err.message} [${err.keyword}]`);
+    }
   }
   return 1;
 }

@@ -82,9 +82,14 @@ ${MARKER_END}`;
   return section;
 }
 
+interface ApplyOptions {
+  dryRun?: boolean;
+}
+
 export function apply(
   doctrinePath: string,
   claudeMdPath: string,
+  opts: ApplyOptions = {},
 ): number {
   const parsed = parseDoctrine(doctrinePath);
 
@@ -109,6 +114,11 @@ export function apply(
   const hash = createHash("sha256").update(content).digest("hex").slice(0, 12);
 
   const section = generateSection(parsed.data, hash);
+
+  if (opts.dryRun) {
+    console.log(section);
+    return 0;
+  }
 
   if (existsSync(claudeMdPath)) {
     let existing = readFileSync(claudeMdPath, "utf-8");

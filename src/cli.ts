@@ -15,16 +15,18 @@ program
   .command("validate")
   .description("Validate doctrine.yaml against the schema")
   .argument("[file]", "Path to doctrine.yaml", "doctrine.yaml")
-  .action((file: string) => {
-    process.exit(validate(file));
+  .option("--json", "Output as JSON (for CI integrations)")
+  .action((file: string, opts: { json?: boolean }) => {
+    process.exit(validate(file, opts));
   });
 
 program
   .command("lint")
   .description("Check doctrine.yaml for style and best-practice issues")
   .argument("[file]", "Path to doctrine.yaml", "doctrine.yaml")
-  .action((file: string) => {
-    process.exit(lint(file));
+  .option("--json", "Output as JSON (for CI integrations)")
+  .action((file: string, opts: { json?: boolean }) => {
+    process.exit(lint(file, opts));
   });
 
 program
@@ -32,8 +34,9 @@ program
   .description("Generate CLAUDE.md section from doctrine.yaml")
   .argument("[doctrine]", "Path to doctrine.yaml", "doctrine.yaml")
   .option("-o, --output <file>", "Path to CLAUDE.md", "CLAUDE.md")
-  .action((doctrine: string, opts: { output: string }) => {
-    process.exit(apply(doctrine, opts.output));
+  .option("--dry-run", "Preview the generated section without writing")
+  .action((doctrine: string, opts: { output: string; dryRun?: boolean }) => {
+    process.exit(apply(doctrine, opts.output, { dryRun: opts.dryRun }));
   });
 
 program.parse();

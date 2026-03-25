@@ -21,7 +21,11 @@ const SECRET_PATTERNS = [
   /(?:Bearer |Basic )[A-Za-z0-9+/=]{20,}/,
 ];
 
-export function lint(filePath: string): number {
+interface LintOptions {
+  json?: boolean;
+}
+
+export function lint(filePath: string, opts: LintOptions = {}): number {
   const parsed = parseDoctrine(filePath);
 
   if (!parsed.ok) {
@@ -32,9 +36,13 @@ export function lint(filePath: string): number {
   // Schema validation first — lint requires valid doctrine
   const schemaResult = validateDoctrine(parsed.data);
   if (!schemaResult.valid) {
-    console.error(
-      `✗ ${filePath} has schema errors. Run 'doctrine validate' first.`,
-    );
+    if (opts.json) {
+      console.log(JSON.stringify({ file: filePath, error: "Schema validation failed. Run 'doctrine validate' first.", warnings: [] }));
+    } else {
+      console.error(
+        `✗ ${filePath} has schema errors. Run 'doctrine validate' first.`,
+      );
+    }
     return 1;
   }
 
@@ -125,6 +133,11 @@ export function lint(filePath: string): number {
   }
 
   // Output
+  if (opts.json) {
+    console.log(JSON.stringify({ file: filePath, warnings }));
+    return 0;
+  }
+
   if (warnings.length === 0) {
     console.log(`✓ ${filePath} — no lint warnings`);
     return 0;
