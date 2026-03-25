@@ -12,49 +12,51 @@ cd aaa
 bun install
 ```
 
+All commands below use `bun run src/cli.ts` as the entrypoint. If you prefer a shorter alias, run `bun link` to make `doctrine` available globally.
+
 ## Quick Start
 
 ```bash
 # 1. Copy doctrine.yaml into your project
 cp doctrine.yaml ~/your-project/
+cd ~/your-project/
 
 # 2. Edit the values to fit your project's needs
+
 # 3. Validate it
-bun run src/cli.ts validate ~/your-project/doctrine.yaml
+bun run ~/aaa/src/cli.ts validate doctrine.yaml
 
 # 4. Inject into CLAUDE.md
-bun run src/cli.ts apply ~/your-project/doctrine.yaml -o ~/your-project/CLAUDE.md
+bun run ~/aaa/src/cli.ts apply doctrine.yaml
 ```
 
 Your agent now has structured values in its context — structural rules it must follow, behavioral commitments it aspires to, and judgment principles for when things are ambiguous.
 
 ## Commands
 
-### `doctrine validate [file]`
+### `validate [file]`
 
 Validates `doctrine.yaml` against the schema. Checks required fields, value types, naming conventions, and enforcement methods.
 
 ```bash
-$ doctrine validate
+$ bun run src/cli.ts validate
 ✓ doctrine.yaml is valid (@aaa/core v0.1.0)
   10 values: 3 structural, 2 behavioral, 5 judgment
-```
 
-Exit codes: `0` = valid, `1` = errors found.
-
-```bash
-# JSON output for CI
-$ doctrine validate --json
+$ bun run src/cli.ts validate --json
 {"valid":true,"file":"doctrine.yaml","doctrine":"@aaa/core","version":"0.1.0","values":{"total":10,"structural":3,"behavioral":2,"judgment":5}}
 ```
 
-### `doctrine lint [file]`
+### `lint [file]`
 
 Checks for style and best-practice issues beyond schema validity. Advisory — warnings don't fail the command.
 
 ```bash
-$ doctrine lint
+$ bun run src/cli.ts lint
 ✓ doctrine.yaml — no lint warnings
+
+$ bun run src/cli.ts lint --json
+{"valid":true,"file":"doctrine.yaml","warnings":[]}
 ```
 
 What it catches:
@@ -64,32 +66,29 @@ What it catches:
 - Behavioral values that should be structural (uses enforceable language like "never", "block", "deny")
 - Missing explicit enforcement methods
 
-Exit codes: `0` = always (warnings are advisory), `1` = file error or schema invalid.
-
-```bash
-# JSON output for CI
-$ doctrine lint --json
-{"valid":true,"file":"doctrine.yaml","warnings":[]}
-
-# With warnings:
-{"valid":true,"file":"doctrine.yaml","warnings":[{"valueId":"my-rule","rule":"prefer-structural","message":"Behavioral value uses enforceable language (\"never access\")","suggestion":"Consider changing type to \"structural\" with an enforcement method"}]}
-```
-
-### `doctrine apply [file]`
+### `apply [file]`
 
 Generates a managed section in `CLAUDE.md` from `doctrine.yaml`. Safe to re-run — replaces the section between `<!-- DOCTRINE:START -->` and `<!-- DOCTRINE:END -->` markers without touching surrounding content.
 
 ```bash
-$ doctrine apply
+$ bun run src/cli.ts apply
 ✓ Applied @aaa/core v0.1.0 to CLAUDE.md
   Hash: a0582aa55966
 
 # Preview without writing
-$ doctrine apply --dry-run
+$ bun run src/cli.ts apply --dry-run
 
 # Write to a different file
-$ doctrine apply -o agents.md
+$ bun run src/cli.ts apply -o agents.md
 ```
+
+### Exit Codes
+
+| Command | 0 | 1 | 2 |
+|---------|---|---|---|
+| validate | Valid | Schema errors | — |
+| lint | Always (warnings are advisory) | File error or schema invalid | — |
+| apply | Applied | Error (missing file, bad schema, broken markers) | — |
 
 ## The Doctrine Format
 
@@ -130,6 +129,10 @@ The spec also includes:
 - Versions are semver: `1.0.0`
 - Value IDs are kebab-case: `privacy-over-convenience`
 
+## Compatibility
+
+AAA is built for **Bun** and tested exclusively on Bun. Node.js may work for running the CLI but is not officially supported. The compiled binary (`bun build --compile`) runs anywhere without a runtime.
+
 ## CI Integration
 
 ```yaml
@@ -142,10 +145,16 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: oven-sh/setup-bun@v2
-      - run: bun install --cwd path/to/aaa
+      - run: bun install --cwd path/to/aaa  # will simplify once published to npm
       - run: bun run path/to/aaa/src/cli.ts validate --json doctrine.yaml
       - run: bun run path/to/aaa/src/cli.ts lint --json doctrine.yaml
 ```
+
+## Roadmap
+
+- **Doctrine composition** (`extends`) — subdoctrines that inherit from and extend a parent doctrine
+- **Citizenship registry** — a trust network where agents earn reputation through verified adherence
+- **`doctrine init`** — LLM-powered conversion from existing CLAUDE.md to doctrine.yaml
 
 ## Development
 
