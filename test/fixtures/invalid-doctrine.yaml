@@ -1,0 +1,10 @@
+doctrine: "missing-at-prefix"
+version: "not-semver"
+
+values:
+  - id: "WRONG_CASE"
+    type: structural
+    rule: "short"
+  - id: "no-example"
+    type: judgment
+    rule: "This is a judgment value without an example field"

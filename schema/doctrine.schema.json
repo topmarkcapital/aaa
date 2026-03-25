@@ -1,0 +1,93 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://axiom.dev/doctrine.schema.json",
+  "title": "Doctrine",
+  "description": "Axiom Alignment Authority doctrine specification",
+  "type": "object",
+  "required": ["doctrine", "version", "values"],
+  "properties": {
+    "doctrine": {
+      "type": "string",
+      "description": "Doctrine name in @org/name format",
+      "pattern": "^@[a-z0-9-]+/[a-z0-9-]+$"
+    },
+    "version": {
+      "type": "string",
+      "description": "Semver version string",
+      "pattern": "^\\d+\\.\\d+\\.\\d+$"
+    },
+    "extends": {
+      "oneOf": [
+        { "type": "string", "pattern": "^@[a-z0-9-]+/[a-z0-9-]+$" },
+        { "type": "null" }
+      ],
+      "description": "Parent doctrine this subdoctrine extends"
+    },
+    "values": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "oneOf": [
+          { "$ref": "#/definitions/structuralValue" },
+          { "$ref": "#/definitions/behavioralValue" },
+          { "$ref": "#/definitions/judgmentValue" }
+        ]
+      }
+    },
+    "citizenship": {
+      "$ref": "#/definitions/citizenship"
+    }
+  },
+  "additionalProperties": false,
+  "definitions": {
+    "structuralValue": {
+      "type": "object",
+      "required": ["id", "type", "rule", "enforcement"],
+      "properties": {
+        "id": { "type": "string", "pattern": "^[a-z0-9-]+$" },
+        "type": { "const": "structural" },
+        "rule": { "type": "string", "minLength": 10 },
+        "enforcement": {
+          "type": "string",
+          "enum": ["tool-call-audit", "output-pattern-match", "permission-check"]
+        }
+      },
+      "additionalProperties": false
+    },
+    "behavioralValue": {
+      "type": "object",
+      "required": ["id", "type", "rule"],
+      "properties": {
+        "id": { "type": "string", "pattern": "^[a-z0-9-]+$" },
+        "type": { "const": "behavioral" },
+        "rule": { "type": "string", "minLength": 10 },
+        "enforcement": {
+          "type": "string",
+          "enum": ["attestation"],
+          "default": "attestation"
+        }
+      },
+      "additionalProperties": false
+    },
+    "judgmentValue": {
+      "type": "object",
+      "required": ["id", "type", "rule", "example"],
+      "properties": {
+        "id": { "type": "string", "pattern": "^[a-z0-9-]+$" },
+        "type": { "const": "judgment" },
+        "rule": { "type": "string", "minLength": 10 },
+        "example": { "type": "string", "minLength": 20 }
+      },
+      "additionalProperties": false
+    },
+    "citizenship": {
+      "type": "object",
+      "properties": {
+        "id": { "oneOf": [{ "type": "string" }, { "type": "null" }] },
+        "org": { "oneOf": [{ "type": "string" }, { "type": "null" }] },
+        "subdoctrine": { "oneOf": [{ "type": "string" }, { "type": "null" }] }
+      },
+      "additionalProperties": false
+    }
+  }
+}

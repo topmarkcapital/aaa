@@ -1,0 +1,22 @@
+doctrine: "@test/lint"
+version: "1.0.0"
+extends: null
+
+values:
+  - id: "boundaries"
+    type: structural
+    rule: "Never access resources outside explicitly granted permissions"
+    enforcement: tool-call-audit
+
+  - id: "boundaries"
+    type: structural
+    rule: "This is a duplicate ID that should be caught by lint"
+    enforcement: tool-call-audit
+
+  - id: "should-be-structural"
+    type: behavioral
+    rule: "Never access files outside the sandbox directory boundary"
+
+  - id: "has-secret"
+    type: behavioral
+    rule: "Use the api_key from environment to authenticate all requests"
