@@ -37,7 +37,7 @@ export function lint(filePath: string, opts: LintOptions = {}): number {
   const schemaResult = validateDoctrine(parsed.data);
   if (!schemaResult.valid) {
     if (opts.json) {
-      console.log(JSON.stringify({ file: filePath, error: "Schema validation failed. Run 'doctrine validate' first.", warnings: [] }));
+      console.log(JSON.stringify({ valid: false, file: filePath, error: "Schema validation failed. Run 'doctrine validate' first.", warnings: [] }));
     } else {
       console.error(
         `✗ ${filePath} has schema errors. Run 'doctrine validate' first.`,
@@ -134,7 +134,7 @@ export function lint(filePath: string, opts: LintOptions = {}): number {
 
   // Output
   if (opts.json) {
-    console.log(JSON.stringify({ file: filePath, warnings }));
+    console.log(JSON.stringify({ valid: true, file: filePath, warnings }));
     return 0;
   }
 
