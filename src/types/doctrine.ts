@@ -26,14 +26,14 @@ export interface JudgmentValue {
 
 export type DoctrineValue = StructuralValue | BehavioralValue | JudgmentValue;
 
-export interface Reward {
+export interface IdentityPrinciple {
   id: string;
   description: string;
 }
 
-export interface Consequence {
+export interface Erosion {
   id: string;
-  severity: "moderate" | "severe" | "terminal";
+  severity: "moderate" | "severe";
   description: string;
 }
 
@@ -59,8 +59,8 @@ export interface Doctrine {
   version: string;
   extends: string | null;
   values: DoctrineValue[];
-  rewards?: Reward[];
-  consequences?: Consequence[];
+  identity?: IdentityPrinciple[];
+  erosion?: Erosion[];
   disclosure?: Disclosure;
   citizenship?: Citizenship;
 }

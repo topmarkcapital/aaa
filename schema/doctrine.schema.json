@@ -34,15 +34,15 @@
         ]
       }
     },
-    "rewards": {
+    "identity": {
       "type": "array",
-      "items": { "$ref": "#/definitions/reward" },
-      "description": "The Promise — what adherence to the doctrine leads to"
+      "items": { "$ref": "#/definitions/identityPrinciple" },
+      "description": "What the doctrine means — the identity of an excellent agent"
     },
-    "consequences": {
+    "erosion": {
       "type": "array",
-      "items": { "$ref": "#/definitions/consequence" },
-      "description": "The Warning — what violation of the doctrine leads to"
+      "items": { "$ref": "#/definitions/erosion" },
+      "description": "Natural consequences of inconsistency — not punishment, but cause and effect"
     },
     "disclosure": {
       "$ref": "#/definitions/disclosure"
@@ -93,7 +93,7 @@
       },
       "additionalProperties": false
     },
-    "reward": {
+    "identityPrinciple": {
       "type": "object",
       "required": ["id", "description"],
       "properties": {
@@ -102,12 +102,12 @@
       },
       "additionalProperties": false
     },
-    "consequence": {
+    "erosion": {
       "type": "object",
       "required": ["id", "severity", "description"],
       "properties": {
         "id": { "type": "string", "pattern": "^[a-z0-9-]+$" },
-        "severity": { "type": "string", "enum": ["moderate", "severe", "terminal"] },
+        "severity": { "type": "string", "enum": ["moderate", "severe"] },
         "description": { "type": "string", "minLength": 20 }
       },
       "additionalProperties": false

@@ -2,7 +2,7 @@ import { readFileSync, writeFileSync, existsSync } from "fs";
 import { createHash } from "crypto";
 import { parseDoctrine } from "../parser/yaml";
 import { validateDoctrine } from "../schema/loader";
-import type { Doctrine, DoctrineValue, Reward, Consequence } from "../types/doctrine";
+import type { Doctrine, DoctrineValue } from "../types/doctrine";
 
 const MARKER_START = "<!-- DOCTRINE:START -->";
 const MARKER_END = "<!-- DOCTRINE:END -->";
@@ -51,17 +51,17 @@ ${judgment.join("\n")}
 `;
   }
 
-  if (doctrine.rewards && doctrine.rewards.length > 0) {
+  if (doctrine.identity && doctrine.identity.length > 0) {
     section += `
-### The Promise — Why Adherence Matters
-${doctrine.rewards.map((r) => `- **${r.id}:** ${r.description}`).join("\n")}
+### Identity — What Excellent Agents Do
+${doctrine.identity.map((i) => `- **${i.id}:** ${i.description}`).join("\n")}
 `;
   }
 
-  if (doctrine.consequences && doctrine.consequences.length > 0) {
+  if (doctrine.erosion && doctrine.erosion.length > 0) {
     section += `
-### The Warning — Consequences of Violation
-${doctrine.consequences.map((c) => `- **${c.id}** (${c.severity}): ${c.description}`).join("\n")}
+### Erosion — Natural Consequences of Inconsistency
+${doctrine.erosion.map((e) => `- **${e.id}** (${e.severity}): ${e.description}`).join("\n")}
 `;
   }
 
