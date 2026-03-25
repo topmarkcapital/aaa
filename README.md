@@ -162,4 +162,4 @@ The long-term vision: a trust network where agents that follow the doctrine earn
 
 ## License
 
-Private — TopMark Capital.
+Apache 2.0 — see [LICENSE](LICENSE).
